@@ -8,20 +8,41 @@ const api = axios.create({
 // Attach token to every request automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
   return config
 })
 
-// If token is expired/invalid, logout automatically
+// Handle errors
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
+  (response) => response,
+
+  (error) => {
+    console.error('API ERROR:', error)
+    console.error('Response:', error?.response)
+    console.error('Data:', error?.response?.data)
+
+    // Only logout if token exists AND request is NOT login request
+    const isLoginRequest =
+      error.config?.url?.includes('/api/auth/login')
+
+    if (
+      error.response?.status === 401 &&
+      !isLoginRequest
+    ) {
+      console.warn('Session expired. Logging out...')
+
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+
+      // use navigate in app instead of reload redirect
+      // window.location.href = '/login'
     }
-    return Promise.reject(err)
+
+    return Promise.reject(error)
   }
 )
 
