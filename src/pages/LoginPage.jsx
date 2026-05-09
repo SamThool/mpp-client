@@ -17,10 +17,13 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const { data } = await api.post('/api/auth/login', { login, password })
+      console.log(data)
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       navigate('/')
     } catch (err) {
+      console.log(err)
+      console.log(err.response)
       setError(err.response?.data?.message || 'Login failed. Please try again.')
     } finally {
       setLoading(false)
