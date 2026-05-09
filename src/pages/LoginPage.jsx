@@ -20,7 +20,7 @@ export default function LoginPage() {
       console.log(data)
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
-      navigate('/')
+      // navigate('/')
     } catch (err) {
       console.log(err)
       console.log(err.response)
